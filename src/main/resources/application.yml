@@ -1,0 +1,13 @@
+server:
+  port:8080
+
+spring:
+  thymeleaf:
+    prefix:classpath:/templates
+    suffix:.html
+    cache:false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/training?setUnicode=true&characterEncoding=utf8
+    username: root
+    password: 20000211
