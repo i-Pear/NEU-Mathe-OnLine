@@ -20,4 +20,9 @@ public class RenderController {
         return "train";
     }
 
+    @RequestMapping("/register")
+    public String register() {
+        return "register";
+    }
+
 }

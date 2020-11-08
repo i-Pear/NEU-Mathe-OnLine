@@ -1,42 +1,27 @@
 package com.ipear.web.training.entity;
 
-public class User {
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name="users",indexes = {@Index(columnList = "alias")})
+@Getter
+@Setter
+public class User{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int uid;
+
+    @Column
     public String alias;
+
+    @Column
     public String password;
-    public boolean sex;
 
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean getSex() {
-        return sex;
-    }
-
-    public void setSex(boolean sex) {
-        this.sex = sex;
-    }
+    @Column
+    public Boolean sex;
 
 }
