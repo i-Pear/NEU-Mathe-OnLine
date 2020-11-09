@@ -19,7 +19,7 @@
             <div style="display: flex;justify-content: center;margin-top: 150px">
                 <el-card style="width: 400px">
                     <div slot="header" class="clearfix">
-                        <span>登录</span>
+                        <span>注册</span>
                     </div>
                     <center>
                         <table>
@@ -46,7 +46,7 @@
                             <!--- the third line --->
                             <tr>
                                 <td colspan="2">
-                                    <el-button style="width: 300px;margin-top: 20px" type="primary" @click="doLogin(user.username,user.password)">登录</el-button>
+                                    <el-button style="width: 300px;margin-top: 20px" type="primary" @click="doLogin(user.username,user.password)">注册</el-button>
                                 </td>
                             </tr>
                         </table>
@@ -105,6 +105,8 @@
     var Ctor = Vue.extend(Main);
     new Ctor().$mount('#app');
 </script>
+
+<script type="text/javascript" src="static/js/cartoon.js"></script>
 
 </body>
 </html>
