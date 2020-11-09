@@ -2,6 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8">
+    <title>注册页面</title>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/vue.js"></script>
     <script src="static/js/index.js"></script>
@@ -45,7 +46,7 @@
                             <!--- the third line --->
                             <tr>
                                 <td colspan="2">
-                                    <el-button style="width: 300px;margin-top: 20px" type="primary" @click="doLogin">登录</el-button>
+                                    <el-button style="width: 300px;margin-top: 20px" type="primary" @click="doLogin(user.username,user.password)">登录</el-button>
                                 </td>
                             </tr>
                         </table>
@@ -67,8 +68,37 @@
             }
         },
         methods: {
-            doLogin() {
-                alert(JSON.stringify(this.user));
+            doLogin(usr,pwd) {
+                if(usr==null||usr===""){
+                    alert("用户名不能为空！");
+                    return;
+                }
+                if(pwd==null||usr===""){
+                    alert("密码不能为空！");
+                    return;
+                }
+                $.ajax({
+                    type:"post",
+                    url:"/registerUser",
+                    async:false,
+                    contentType : "application/json; charset=utf-8",
+                    data:JSON.stringify({"username":usr,"password":pwd}),
+                    dataType : "json",
+                    cache : false,
+                    success:function (message){
+                        if(message["status"]==="success"){
+                            alert("注册成功！");
+                            document.location="/";
+                        }else if(message["status"]==="userExist"){
+                            alert("用户名已存在！");
+                        }else{
+                            alert("未知错误，请重试");
+                        }
+                    },
+                    error:function (message){
+                        alert("未知错误，请稍后再试："+String(message));
+                    }
+                });
             }
         }
     };

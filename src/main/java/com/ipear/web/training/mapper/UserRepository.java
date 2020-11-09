@@ -9,4 +9,6 @@ public interface UserRepository extends CrudRepository<User,Integer> {
 
     User getUserByUid(int uid);
 
+    boolean existsUserByAlias(String alias);
+
 }

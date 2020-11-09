@@ -2,13 +2,18 @@ package com.ipear.web.training.controller;
 
 import com.ipear.web.training.entity.User;
 import com.ipear.web.training.mapper.UserRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+@Data
+class RegisterData{
+    String username;
+    String password;
+}
 
 @RestController
 public class AjaxController {
@@ -38,15 +43,30 @@ public class AjaxController {
         return map;
     }
 
-    @RequestMapping("/testing")
-    public String testing(){
-        User user=new User();
-        user.alias="123";
-        user.password="456";
-        user.sex=true;
-        userRepository.save(user);
+    @ResponseBody
+    @RequestMapping("/registerUser")
+    public String registerUser(@RequestBody RegisterData data){
 
-        return "123";
+        try{
+
+            // check if username exists
+            if(userRepository.existsUserByAlias(data.username)){
+                return "{\"status\":\"userExist\"}";
+            }
+
+            // try to write database
+            User user=new User();
+            user.alias=data.username;
+            user.password=data.password;
+            user.sex=true;
+            userRepository.save(user);
+
+            return "{\"status\":\"success\"}";
+
+        }catch (Exception ex){
+            return "{\"status\":\"failed\"}";
+        }
+
     }
 
 }
