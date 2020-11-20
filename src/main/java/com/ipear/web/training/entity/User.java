@@ -12,16 +12,12 @@ import javax.persistence.*;
 public class User{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int uid;
+    public String uid;
 
     @Column
     public String alias;
 
     @Column
     public String password;
-
-    @Column
-    public Boolean sex;
 
 }

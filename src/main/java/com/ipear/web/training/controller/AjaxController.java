@@ -5,6 +5,7 @@ import com.ipear.web.training.mapper.UserRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import net.sf.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,30 @@ public class AjaxController {
         return map;
     }
 
+    @RequestMapping("/checkPassword")
+    public Map<String, Object> checkPassword(@RequestParam("key") String key){
+        JSONArray jsonArray = JSONArray.fromObject(key);
+        String username= jsonArray.getString(0);
+        String password= jsonArray.getString(1);
+
+        try{
+            User user= userRepository.getUserByUid(username);
+            if(user==null|| !user.password.equals(password)){
+                return new HashMap<>(){{
+                    put("result","fail");
+                }};
+            }else{
+                return new HashMap<>(){{
+                    put("result","correct");
+                }};
+            }
+        }catch (Exception ex){
+            return new HashMap<>(){{
+                put("result","fail");
+            }};
+        }
+    }
+
     @ResponseBody
     @RequestMapping("/registerUser")
     public String registerUser(@RequestBody RegisterData data){
@@ -58,7 +83,6 @@ public class AjaxController {
             User user=new User();
             user.alias=data.username;
             user.password=data.password;
-            user.sex=true;
             userRepository.save(user);
 
             return "{\"status\":\"success\"}";
