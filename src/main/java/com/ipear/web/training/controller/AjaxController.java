@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import net.sf.json.JSONArray;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +25,7 @@ public class AjaxController {
     @Autowired
     UserRepository userRepository;
 
-    static Map<String, String> chapter_name = new HashMap<>() {
-        {
+    static Map<String, String> chapter_name = new HashMap<>() {{
             put("1-1", "1.1 函数");
             put("1-2", "1.2 数列的极限");
             put("1-3", "1.3 函数的极限");
@@ -33,8 +35,7 @@ public class AjaxController {
             put("2-2", "导数的求导法则");
             put("2-3", "高阶导数");
             put("2-4", "微分");
-        }
-    };
+    }};
 
     @RequestMapping("/getChapterInfo/{chapter}")
     public Map<String, Object> getChapterInfo(@PathVariable String chapter) {
@@ -44,8 +45,35 @@ public class AjaxController {
         return map;
     }
 
-    @RequestMapping("/checkPassword")
-    public Map<String, Object> checkPassword(@RequestParam("key") String key){
+    @RequestMapping("/changePassword")
+    public Map<String, Object> changePassword(@RequestParam("key") String key, HttpServletRequest request) {
+        JSONArray jsonArray = JSONArray.fromObject(key);
+        Cookie[] cookies= request.getCookies();
+        String username="";
+        for(Cookie c:cookies){
+            if(c.getName().equals("username")){
+                username=c.getValue();
+                break;
+            }
+        }
+        String old_password= jsonArray.getString(0);
+        String new_password= jsonArray.getString(1);
+        User user= userRepository.getUserByUid(username);
+        if(user==null||!user.password.equals(old_password)){
+            user.password=new_password;
+            userRepository.save(user);
+            return new HashMap<>(){{
+                put("result","success");
+            }};
+        }else{
+            return new HashMap<>(){{
+                put("result","fail");
+            }};
+        }
+    }
+
+    @RequestMapping("/doLogin")
+    public Map<String, Object> doLogin(@RequestParam("key") String key, HttpServletResponse response){
         JSONArray jsonArray = JSONArray.fromObject(key);
         String username= jsonArray.getString(0);
         String password= jsonArray.getString(1);
@@ -57,6 +85,9 @@ public class AjaxController {
                     put("result","fail");
                 }};
             }else{
+                Cookie cookie = new Cookie("username", username);
+                cookie.setMaxAge(-1); // cookie in session
+                response.addCookie(cookie);
                 return new HashMap<>(){{
                     put("result","correct");
                 }};
