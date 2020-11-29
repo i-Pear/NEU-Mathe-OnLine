@@ -16,25 +16,23 @@
         var current_problem_imgs = [];
         var chapter_name;
         var problem_count;
+        var markedItems = {};
+        var current_problem_id = 1;
+        var show_ans = false;
+
         $.ajax({
-            type:"get",
-            url:"getChapterInfo/"+chapter_id,
-            async:false,
-            contentType : "application/json; charset=utf-8",
-            dataType : "json",
-            cache : false,
-            success:function (data){
+            type: "get",
+            url: "getChapterInfo/" + chapter_id,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            cache: false,
+            success: function (data) {
                 chapter_name = data["chapter_name"];
                 problem_count = data["problem_count"];
-                // init image urls
-                for(let i=0;i<6;i++){
-                    current_problem_imgs.push(chapter_id+problem_imgs_suffix[i]);
-                }
+                markedItems = JSON.parse(data["markedItems"]);
             }
         });
-
-        var current_problem_id = 1;
-        var show_ans=false;
 
     </script>
 </head>
@@ -84,7 +82,7 @@
             <!------ 网页导航栏 ------>
             <el-header>
                 <div style="float: right">
-                    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
+                    <el-menu class="el-menu-demo" mode="horizontal"
                              @select="handleSelect">
                         <el-menu-item index="1">首页</el-menu-item>
                         <el-submenu index="2">
@@ -109,12 +107,15 @@
             <el-page-header @back="goBack" content="题目练习" style="padding-bottom: 20px;padding-left: 20px">
             </el-page-header>
             <div style="text-align: center;margin-top: 20px">
-                <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"></el-progress>
+                <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"
+                             style="margin-left: 10%;margin-right: 10%;margin-bottom: 20px;margin-top: 20px"></el-progress>
                 <br><br>
                 <el-button type="primary" @click="lastProblem">上一题</el-button>
-                <el-button style="margin-left: 200px;margin-right: 200px;" type="primary" @click="nextProblem">下一题</el-button>
-                <el-button style="margin-right: 200px;" id="switchAns" type="primary" @click="switchAns">显示答案</el-button>
-                <el-button type="primary" @click="favourite">收藏此题</el-button>
+                <el-button style="margin-left: 200px;margin-right: 200px;" type="primary" @click="nextProblem">下一题
+                </el-button>
+                <el-button style="margin-right: 200px;" id="switchAns" type="primary" @click="switchAns">显示答案
+                </el-button>
+                <el-button type="danger" id="fav_button" @click="favourite">收藏此题</el-button>
             </div>
             <div style="margin: 70px">
                 <center>
@@ -150,7 +151,7 @@
             return {
                 value: true,
                 fit: "contain",
-                percentage:Math.ceil(current_problem_id/problem_count*100),
+                percentage: Math.ceil(current_problem_id / problem_count * 100),
             };
         },
         methods: {
@@ -179,44 +180,76 @@
                 });
             },
             favourite() {
+                if ($("#fav_button").text() === "收藏此题") {
+                    // not being favoured
+                    $("#fav_button").text("取消收藏");
+                    markedItems[chapter_id + "_" + String(current_problem_id)] = true;
+                } else {
+                    // has been favoured
+                    $("#fav_button").text("收藏此题");
+                    delete markedItems[chapter_id + "_" + String(current_problem_id)];
+                    console.log(markedItems);
+                }
                 this.$notify.success({
                     title: '题目收藏信息变更',
                     message: "此处修改用户数据库",
                 });
+                // update database
+                $.ajax({
+                    type: "post",
+                    url: "updateExerciseRecord/",
+                    async: false,
+                    data:JSON.stringify(markedItems),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    cache: false,
+                    success: function (data) {
+                        this.$notify.success({
+                            title: '题目收藏信息变更',
+                            message: "此处修改用户数据库",
+                        });
+                    }
+                });
             },
             update_info() {
-                for(let i=0;i<6;i++){
-                    current_problem_imgs[i]=String(current_problem_id)+problem_imgs_suffix[i];
+                for (let i = 0; i < 6; i++) {
+                    current_problem_imgs[i] = String(current_problem_id) + problem_imgs_suffix[i];
                 }
                 // let temp="static/data/"+String(current_problem_id)+"_0.png";
-                document.getElementById("statement").src="static/data/"+String(current_problem_id)+"_0.png";
-                document.getElementById("c1").src="static/data/"+String(current_problem_id)+"_1.png";
-                document.getElementById("c2").src="static/data/"+String(current_problem_id)+"_2.png";
-                document.getElementById("c3").src="static/data/"+String(current_problem_id)+"_3.png";
-                document.getElementById("c4").src="static/data/"+String(current_problem_id)+"_4.png";
-                document.getElementById("c5").src="static/data/"+String(current_problem_id)+"_5.png";
+                document.getElementById("statement").src = "static/data/" + String(current_problem_id) + "_0.png";
+                document.getElementById("c1").src = "static/data/" + String(current_problem_id) + "_1.png";
+                document.getElementById("c2").src = "static/data/" + String(current_problem_id) + "_2.png";
+                document.getElementById("c3").src = "static/data/" + String(current_problem_id) + "_3.png";
+                document.getElementById("c4").src = "static/data/" + String(current_problem_id) + "_4.png";
+                document.getElementById("c5").src = "static/data/" + String(current_problem_id) + "_5.png";
 
-                this.percentage=Math.ceil(current_problem_id/problem_count*100);
+                this.percentage = Math.ceil(current_problem_id / problem_count * 100);
+
+                if(markedItems[chapter_id + "_" + String(current_problem_id)]){
+                    $("#fav_button").text("取消收藏");
+                }else{
+                    $("#fav_button").text("收藏此题");
+                }
             },
             nextProblem() {
-                if(current_problem_id===problem_count)return;
+                if (current_problem_id === problem_count) return;
                 current_problem_id++;
                 this.update_info();
             },
             lastProblem() {
-                if(current_problem_id===1)return;
+                if (current_problem_id === 1) return;
                 current_problem_id--;
                 this.update_info();
             },
             showAns() {
-                document.getElementById("answer").style.display="inline";
-                document.getElementById("switchAns").innerText="隐藏答案";
-                show_ans=true;
+                document.getElementById("answer").style.display = "inline";
+                document.getElementById("switchAns").innerText = "隐藏答案";
+                show_ans = true;
             },
             hideAns() {
-                document.getElementById("answer").style.display="none";
-                document.getElementById("switchAns").innerText="显示答案";
-                show_ans=false;
+                document.getElementById("answer").style.display = "none";
+                document.getElementById("switchAns").innerText = "显示答案";
+                show_ans = false;
             },
             switchAns() {
                 if (show_ans) this.hideAns();
@@ -226,6 +259,25 @@
     };
     var Ctor = Vue.extend(Main);
     new Ctor().$mount('#app');
+
+    // init image urls
+    for (let i = 0; i < 6; i++) {
+        current_problem_imgs[i] = String(current_problem_id) + problem_imgs_suffix[i];
+    }
+    document.getElementById("statement").src = "static/data/" + String(current_problem_id) + "_0.png";
+    document.getElementById("c1").src = "static/data/" + String(current_problem_id) + "_1.png";
+    document.getElementById("c2").src = "static/data/" + String(current_problem_id) + "_2.png";
+    document.getElementById("c3").src = "static/data/" + String(current_problem_id) + "_3.png";
+    document.getElementById("c4").src = "static/data/" + String(current_problem_id) + "_4.png";
+    document.getElementById("c5").src = "static/data/" + String(current_problem_id) + "_5.png";
+
+    this.percentage = Math.ceil(current_problem_id / problem_count * 100);
+
+    if(markedItems[chapter_id + "_" + String(current_problem_id)]){
+        $("#fav_button").text("取消收藏");
+    }else{
+        $("#fav_button").text("收藏此题");
+    }
 </script>
 </body>
 </html>

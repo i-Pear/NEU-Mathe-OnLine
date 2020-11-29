@@ -1,8 +1,11 @@
 package com.ipear.web.training.controller;
 
+import com.ipear.web.training.entity.ExerciseRecord;
 import com.ipear.web.training.entity.User;
+import com.ipear.web.training.mapper.ExerciseRecordRepository;
 import com.ipear.web.training.mapper.UserRepository;
 import lombok.Data;
+import net.sf.json.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import net.sf.json.JSONArray;
@@ -25,6 +28,9 @@ public class AjaxController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ExerciseRecordRepository exerciseRecordRepository;
+
     static Map<String, String> chapter_name = new HashMap<>() {{
             put("1-1", "1.1 函数");
             put("1-2", "1.2 数列的极限");
@@ -38,14 +44,45 @@ public class AjaxController {
     }};
 
     @RequestMapping("/getChapterInfo/{chapter}")
-    public Map<String, Object> getChapterInfo(@PathVariable String chapter) {
+    public Map<String, Object> getChapterInfo(@PathVariable String chapter, HttpServletRequest request) {
+        Cookie[] cookies= request.getCookies();
+        String username="";
+        for(Cookie c:cookies){
+            if(c.getName().equals("username")){
+                username=c.getValue();
+                break;
+            }
+        }
+        ExerciseRecord exerciseRecord= exerciseRecordRepository.getExerciseRecordByUid(username);
+
         Map<String,Object> map=new HashMap<>();
         map.put("chapter_name","123");
         map.put("problem_count",3);
+        map.put("markedItems",exerciseRecord.record);
         return map;
     }
 
-    @RequestMapping("/changePassword")
+    @RequestMapping(value = "/updateExerciseRecord/",method = {RequestMethod.POST})
+    public Map<String, Object> updateExerciseRecord(@RequestBody String data, HttpServletRequest request) {
+        Cookie[] cookies= request.getCookies();
+        String username="";
+        for(Cookie c:cookies){
+            if(c.getName().equals("username")){
+                username=c.getValue();
+                break;
+            }
+        }
+
+        ExerciseRecord exerciseRecord= exerciseRecordRepository.getExerciseRecordByUid(username);
+        exerciseRecord.record=data;
+        exerciseRecordRepository.save(exerciseRecord);
+
+        return new HashMap<>(){{
+            put("status","success");
+        }};
+    }
+
+    @RequestMapping("/modifyPassword")
     public Map<String, Object> changePassword(@RequestParam("key") String key, HttpServletRequest request) {
         JSONArray jsonArray = JSONArray.fromObject(key);
         Cookie[] cookies= request.getCookies();
@@ -72,29 +109,29 @@ public class AjaxController {
         }
     }
 
+    @ResponseBody
     @RequestMapping("/doLogin")
-    public Map<String, Object> doLogin(@RequestParam("key") String key, HttpServletResponse response){
-        JSONArray jsonArray = JSONArray.fromObject(key);
-        String username= jsonArray.getString(0);
-        String password= jsonArray.getString(1);
+    public Map<String, Object> doLogin(@RequestBody RegisterData data, HttpServletResponse response){
+        String username= data.username;
+        String password= data.password;
 
         try{
             User user= userRepository.getUserByUid(username);
             if(user==null|| !user.password.equals(password)){
                 return new HashMap<>(){{
-                    put("result","fail");
+                    put("status","fail");
                 }};
             }else{
                 Cookie cookie = new Cookie("username", username);
                 cookie.setMaxAge(-1); // cookie in session
                 response.addCookie(cookie);
                 return new HashMap<>(){{
-                    put("result","correct");
+                    put("status","success");
                 }};
             }
         }catch (Exception ex){
             return new HashMap<>(){{
-                put("result","fail");
+                put("status","fail");
             }};
         }
     }
@@ -112,9 +149,16 @@ public class AjaxController {
 
             // try to write database
             User user=new User();
+            user.uid= data.username;
             user.alias=data.username;
             user.password=data.password;
             userRepository.save(user);
+
+            // initialize exercise record
+            ExerciseRecord exerciseRecord=new ExerciseRecord();
+            exerciseRecord.uid= data.username;
+            exerciseRecord.record="{}";
+            exerciseRecordRepository.save(exerciseRecord);
 
             return "{\"status\":\"success\"}";
 

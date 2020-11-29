@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8">
+    <title>登录页面</title>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/vue.js"></script>
+    <script src="static/js/index.js"></script>
+    <script src="static/js/utils.js"></script>
+    <style type="text/css">
+        @import url("https://lib.baomitu.com/element-ui/2.13.2/theme-chalk/index.css");
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <template>
+        <div>
+            <div style="display: flex;justify-content: center;margin-top: 150px">
+                <el-card style="width: 400px">
+                    <div slot="header" class="clearfix">
+                        <span>登录</span>
+                    </div>
+                    <center>
+                        <table>
+                            <!--- the first line --->
+                            <tr>
+                                <td>用户名</td>
+                                <td>
+                                    <el-input v-model="user.username"
+                                              placeholder="请输入用户名">
+                                    </el-input>
+                                </td>
+                            </tr>
+                            <!--- the second line --->
+                            <tr>
+                                <td>密码</td>
+                                <td>
+                                    <el-input type="password"
+                                              v-model="user.password"
+                                              placeholder="请输入密码"
+                                              @keydown.enter.native="doLogin">
+                                    </el-input>
+                                </td>
+                            </tr>
+                            <!--- the third line --->
+                            <tr>
+                                <td colspan="2">
+                                    <el-button style="width: 300px;margin-top: 20px" type="primary" @click="doLogin(user.username,user.password)">登录</el-button>
+                                </td>
+                            </tr>
+                        </table>
+                    </center>
+                </el-card>
+            </div>
+        </div>
+    </template>
+</div>
+
+<script>
+    var Main = {
+        data() {
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                }
+            }
+        },
+        methods: {
+            doLogin(usr,pwd) {
+                if(usr==null||usr===""){
+                    alert("用户名不能为空！");
+                    return;
+                }
+                if(pwd==null||usr===""){
+                    alert("密码不能为空！");
+                    return;
+                }
+                $.ajax({
+                    type:"post",
+                    url:"/doLogin",
+                    async:false,
+                    contentType : "application/json; charset=utf-8",
+                    data:JSON.stringify({"username":usr,"password":pwd}),
+                    dataType : "json",
+                    cache : false,
+                    success:function (message){
+                        if(message["status"]==="success"){
+                            alert("登录成功！");
+                            document.location="/";
+                        }else{
+                            alert("未知错误，请重试");
+                        }
+                    },
+                    error:function (message){
+                        alert("未知错误，请稍后再试："+String(message));
+                    }
+                });
+            }
+        }
+    };
+    var Ctor = Vue.extend(Main);
+    new Ctor().$mount('#app');
+</script>
+
+<script type="text/javascript" src="static/js/cartoon.js"></script>
+
+</body>
+</html>
+

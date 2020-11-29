@@ -21,4 +21,14 @@ public class RenderController {
         return "register";
     }
 
+    @RequestMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @RequestMapping("/changePassword")
+    public String changePassword() {
+        return "changePassword";
+    }
+
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ExerciseRecordRepository extends CrudRepository<ExerciseRecord, Integer> {
 
-    ExerciseRecord getUserByUid(String uid);
+    ExerciseRecord getExerciseRecordByUid(String uid);
 
 }
