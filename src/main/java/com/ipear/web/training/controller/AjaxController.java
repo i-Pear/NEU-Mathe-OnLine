@@ -7,6 +7,7 @@ import com.ipear.web.training.mapper.UserRepository;
 import lombok.Data;
 import net.sf.json.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
 import net.sf.json.JSONArray;
 
@@ -31,16 +32,16 @@ public class AjaxController {
     @Autowired
     ExerciseRecordRepository exerciseRecordRepository;
 
-    static Map<String, String> chapter_name = new HashMap<>() {{
-            put("1-1", "1.1 函数");
-            put("1-2", "1.2 数列的极限");
-            put("1-3", "1.3 函数的极限");
-            put("1-4", "1.4 极限的存在法则");
+    static Map<String, Pair<String,Integer>> chapter_name = new HashMap<>() {{
+            put("1-1", Pair.of("1.1 函数",1));
+            put("1-2", Pair.of("1.2 数列的极限",3));
+            put("1-3", Pair.of("1.3 函数的极限",3));
+            put("1-4", Pair.of("1.4 极限的存在法则",3));
 
-            put("2-1", "导数的概念");
-            put("2-2", "导数的求导法则");
-            put("2-3", "高阶导数");
-            put("2-4", "微分");
+            put("2-1", Pair.of("2.1 导数的概念",3));
+            put("2-2", Pair.of("2.2 导数的求导法则",3));
+            put("2-3", Pair.of("2.3 高阶导数",3));
+            put("2-4", Pair.of("2.4 微分",3));
     }};
 
     @RequestMapping("/getChapterInfo/{chapter}")
@@ -56,8 +57,8 @@ public class AjaxController {
         ExerciseRecord exerciseRecord= exerciseRecordRepository.getExerciseRecordByUid(username);
 
         Map<String,Object> map=new HashMap<>();
-        map.put("chapter_name","123");
-        map.put("problem_count",3);
+        map.put("chapter_name",chapter_name.get(chapter).getFirst());
+        map.put("problem_count",chapter_name.get(chapter).getSecond());
         map.put("markedItems",exerciseRecord.record);
         return map;
     }
@@ -82,9 +83,13 @@ public class AjaxController {
         }};
     }
 
-    @RequestMapping("/modifyPassword")
-    public Map<String, Object> changePassword(@RequestParam("key") String key, HttpServletRequest request) {
-        JSONArray jsonArray = JSONArray.fromObject(key);
+    static class ModifyPasswordData{
+        public String old;
+        public String _new;
+    }
+
+    @RequestMapping(value = "/modifyPassword",method = RequestMethod.POST)
+    public Map<String, Object> changePassword(@RequestBody ModifyPasswordData key, HttpServletRequest request) {
         Cookie[] cookies= request.getCookies();
         String username="";
         for(Cookie c:cookies){
@@ -93,18 +98,18 @@ public class AjaxController {
                 break;
             }
         }
-        String old_password= jsonArray.getString(0);
-        String new_password= jsonArray.getString(1);
+        String old_password= key.old;
+        String new_password= key._new;
         User user= userRepository.getUserByUid(username);
         if(user==null||!user.password.equals(old_password)){
+            return new HashMap<>(){{
+                put("status","fail");
+            }};
+        }else{
             user.password=new_password;
             userRepository.save(user);
             return new HashMap<>(){{
-                put("result","success");
-            }};
-        }else{
-            return new HashMap<>(){{
-                put("result","fail");
+                put("status","success");
             }};
         }
     }
