@@ -185,10 +185,32 @@
                 });
             },
             handleSelect(key, keyPath) {
-                this.$notify.info({
-                    title: '页面重定向',
-                    message: '即将转到：' + key
-                });
+                if(key==="1"){
+                    window.location="/";
+                }else if(key==="2-1"){
+                    window.location="/train?chapter=1_1";
+                }else if(key==="2-2"){
+                    this.$notify.success({
+                        title: '提示',
+                        message: '本题库尚未开放'
+                    });
+                }else if(key==="2-3"){
+                    this.$notify.success({
+                        title: '提示',
+                        message: '本题库尚未开放'
+                    });
+                }else if(key==="2-4"){
+                    this.$notify.success({
+                        title: '提示',
+                        message: '本题库尚未开放'
+                    });
+                }else if(key==="3"){
+                    window.location="/history";
+                }else if(key==="4"){
+                    window.location="/app";
+                }else if(key==="5"){
+                    window.location="/about";
+                }
             },
             goBack() {
                 this.$notify.info({

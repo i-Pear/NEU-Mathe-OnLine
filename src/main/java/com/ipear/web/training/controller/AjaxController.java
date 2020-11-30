@@ -34,7 +34,7 @@ public class AjaxController {
 
     static Map<String, Pair<String,Integer>> chapter_name = new HashMap<>() {{
             put("1_1", Pair.of("1.1 函数",3));
-            put("1_2", Pair.of("1.2 数列的极限",3));
+            put("1_2", Pair.of("1.2 数列的极限",2));
             put("1_3", Pair.of("1.3 函数的极限",3));
             put("1_4", Pair.of("1.4 极限的存在法则",3));
 

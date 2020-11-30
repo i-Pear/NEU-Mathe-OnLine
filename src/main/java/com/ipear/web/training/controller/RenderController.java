@@ -8,12 +8,17 @@ public class RenderController {
 
     @RequestMapping("/")
     public String index() {
-        return "app";
+        return "index";
     }
 
     @RequestMapping("/app")
     public String app() {
         return "app";
+    }
+
+    @RequestMapping("/about")
+    public String about() {
+        return "about";
     }
 
     @RequestMapping("/history")

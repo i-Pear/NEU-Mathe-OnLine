@@ -1,10 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>关于我们</title>
+    <title>收藏历史记录</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8">
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/vue.js"></script>
+    <script src="static/js/index.js"></script>
+    <script src="static/js/utils.js"></script>
+    <style type="text/css">
+        @import url("https://lib.baomitu.com/element-ui/2.13.2/theme-chalk/index.css");
+    </style>
 </head>
-<body>
 
+<body>
+<div id="app">
+    <el-container>
+        <el-container>
+            <!------ 网页导航栏 ------>
+            <el-header>
+                <div style="float: right">
+                    <el-menu class="el-menu-demo" mode="horizontal"
+                             @select="handleSelect">
+                        <el-menu-item index="1">首页</el-menu-item>
+                        <el-submenu index="2">
+                            <template slot="title">章节练习</template>
+                            <el-menu-item index="2-1">高等数学</el-menu-item>
+                            <el-menu-item index="2-2">复变函数</el-menu-item>
+                            <el-menu-item index="2-3">线性代数</el-menu-item>
+                            <el-menu-item index="2-4">概率统计</el-menu-item>
+                        </el-submenu>
+                        <el-menu-item index="3">练习记录</el-menu-item>
+                        <el-menu-item index="4">下载客户端</el-menu-item>
+                        <el-menu-item index="5">关于我们</el-menu-item>
+                        <el-avatar
+                                style="margin: 10px"
+                                src="static/img/user-icon.png">
+                        </el-avatar>
+                    </el-menu>
+                </div>
+            </el-header>
+            <!------ 网页页头 ------>
+            <el-page-header @back="goBack" content="关于我们" style="padding-bottom: 20px;padding-left: 20px">
+            </el-page-header>
+            <div style="text-align: center;margin-top: 20px">
+            </div>
+            <div style="margin: 70px">
+                <center>
+                    <h1>
+                        东北大学数学题库练习系统<br><br>
+                        Powered by Vue, jQuery, Elements, Spring Boot<br><br>
+                        Designed by @i.Pear, 2020.10.31<br><br>
+                        Email: 434317543@qq.com<br><br>
+                    </h1>
+                </center>
+            </div>
+        </el-container>
+    </el-container>
+    <!------ 网页页脚 ------>
+    <el-footer style="padding: 0">
+        <div style="background-color: black;text-align: center;font-size: small;color: white;padding: 15px 0;margin: 0">
+            <p>
+                东北大学数学题库练习系统 Powered by Vue, jQuery, Elements, Spring Boot<br/>
+                Designed by @i.Pear, 2020.10.31
+            </p>
+        </div>
+    </el-footer>
+</div>
+<script>
+    var app = new Vue(
+        {
+            el: "#app",
+            data:{
+                value: true,
+                fit: "contain",
+            },
+            methods: {
+                handleSelect(key, keyPath) {
+                    if(key==="1"){
+                        window.location="/";
+                    }else if(key==="2-1"){
+                        window.location="/train?chapter=1_1";
+                    }else if(key==="2-2"){
+                        this.$notify.success({
+                            title: '提示',
+                            message: '本题库尚未开放'
+                        });
+                    }else if(key==="2-3"){
+                        this.$notify.success({
+                            title: '提示',
+                            message: '本题库尚未开放'
+                        });
+                    }else if(key==="2-4"){
+                        this.$notify.success({
+                            title: '提示',
+                            message: '本题库尚未开放'
+                        });
+                    }else if(key==="3"){
+                        window.location="/history";
+                    }else if(key==="4"){
+                        window.location="/app";
+                    }else if(key==="5"){
+                        window.location="/about";
+                    }
+                },
+                goBack() {
+                    this.$notify.info({
+                        title: '请求返回',
+                        message: '请求返回：'
+                    });
+                    window.location="/";
+                },
+            }
+        }
+    );
+    // var Ctor = Vue.extend(Main);
+    // new Ctor().$mount('#app');
+
+</script>
 </body>
 </html>
