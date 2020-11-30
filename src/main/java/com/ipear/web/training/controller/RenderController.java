@@ -16,6 +16,11 @@ public class RenderController {
         return "app";
     }
 
+    @RequestMapping("/history")
+    public String history() {
+        return "history";
+    }
+
     @RequestMapping("/train")
     public String train() {
         return "train";
