@@ -11,6 +11,11 @@
         @import url("https://lib.baomitu.com/element-ui/2.13.2/theme-chalk/index.css");
     </style>
     <script>
+        if(getCookie("username")==null){
+            alert("请先登录！");
+            window.location="/login";
+        }
+
         function GetQueryString(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
             var r = window.location.search.substr(1).match(reg);
