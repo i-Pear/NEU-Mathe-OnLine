@@ -11,6 +11,13 @@
         @import url("https://lib.baomitu.com/element-ui/2.13.2/theme-chalk/index.css");
     </style>
     <script>
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
         var chapter_id = queryVariable("chapter");
         var problem_imgs_suffix = ['_0', '_1', '_2', '_3', '_4', '_5'];
         var current_problem_imgs = [];
@@ -18,6 +25,9 @@
         var problem_count;
         var markedItems = {};
         var current_problem_id = 1;
+        if(GetQueryString("cursor")!==null){
+            current_problem_id=parseInt(GetQueryString("cursor"));
+        }
         var show_ans = false;
 
         $.ajax({
@@ -177,7 +187,7 @@
                     title: '请求返回',
                     message: '请求返回：'
                 });
-                window.location="/";
+                window.location = "/";
             },
             favourite() {
                 if ($("#fav_button").text() === "收藏此题") {
