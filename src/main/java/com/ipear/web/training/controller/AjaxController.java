@@ -33,15 +33,15 @@ public class AjaxController {
     ExerciseRecordRepository exerciseRecordRepository;
 
     static Map<String, Pair<String,Integer>> chapter_name = new HashMap<>() {{
-            put("1-1", Pair.of("1.1 函数",1));
-            put("1-2", Pair.of("1.2 数列的极限",3));
-            put("1-3", Pair.of("1.3 函数的极限",3));
-            put("1-4", Pair.of("1.4 极限的存在法则",3));
+            put("1_1", Pair.of("1.1 函数",3));
+            put("1_2", Pair.of("1.2 数列的极限",3));
+            put("1_3", Pair.of("1.3 函数的极限",3));
+            put("1_4", Pair.of("1.4 极限的存在法则",3));
 
-            put("2-1", Pair.of("2.1 导数的概念",3));
-            put("2-2", Pair.of("2.2 导数的求导法则",3));
-            put("2-3", Pair.of("2.3 高阶导数",3));
-            put("2-4", Pair.of("2.4 微分",3));
+            put("2_1", Pair.of("2.1 导数的概念",3));
+            put("2_2", Pair.of("2.2 导数的求导法则",3));
+            put("2_3", Pair.of("2.3 高阶导数",3));
+            put("2_4", Pair.of("2.4 微分",3));
     }};
 
     @RequestMapping("/getChapterInfo/{chapter}")

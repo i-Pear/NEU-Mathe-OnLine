@@ -11,6 +11,11 @@ public class RenderController {
         return "app";
     }
 
+    @RequestMapping("/app")
+    public String app() {
+        return "app";
+    }
+
     @RequestMapping("/train")
     public String train() {
         return "train";

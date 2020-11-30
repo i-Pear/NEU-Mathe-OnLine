@@ -11,41 +11,6 @@
 <body style="margin: 0;width: 1900px">
 <div id="app">
     <el-container>
-        <!------ 网页侧边栏 ------>
-        <el-aside style="width: 200px;margin-top: 60px">
-            <el-menu default-active="1"
-                     @open="handleOpen"
-                     @close="handleClose"
-                     @select="handleSelect">
-                <el-submenu index="1">
-                    <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span>高等数学</span>
-                    </template>
-                    <el-submenu index="1-1">
-                        <template slot="title">第一章</template>
-                        <el-menu-item index="1-1-1">第一节</el-menu-item>
-                        <el-menu-item index="1-1-2">第二节</el-menu-item>
-                        <el-menu-item index="1-1-3">第三节</el-menu-item>
-                    </el-submenu>
-                    <el-menu-item index="1-2">第二章</el-menu-item>
-                    <el-menu-item index="1-3">第三章</el-menu-item>
-                    <el-menu-item index="1-4">第四章</el-menu-item>
-                </el-submenu>
-                <el-menu-item index="2">
-                    <i class="el-icon-menu"></i>
-                    <span slot="title">线性代数</span>
-                </el-menu-item>
-                <el-menu-item index="3">
-                    <i class="el-icon-document"></i>
-                    <span slot="title">概率统计</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                    <i class="el-icon-setting"></i>
-                    <span slot="title">复变函数</span>
-                </el-menu-item>
-            </el-menu>
-        </el-aside>
         <el-container>
             <!------ 网页导航栏 ------>
             <el-header>

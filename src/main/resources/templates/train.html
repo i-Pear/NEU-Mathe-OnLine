@@ -177,6 +177,7 @@
                     title: '请求返回',
                     message: '请求返回：'
                 });
+                window.location="/";
             },
             favourite() {
                 if ($("#fav_button").text() === "收藏此题") {
@@ -191,14 +192,14 @@
                 }
                 this.$notify.success({
                     title: '题目收藏信息变更',
-                    message: "此处修改用户数据库",
+                    message: "用户数据库已修改",
                 });
                 // update database
                 $.ajax({
                     type: "post",
                     url: "updateExerciseRecord/",
                     async: false,
-                    data:JSON.stringify(markedItems),
+                    data: JSON.stringify(markedItems),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     cache: false,
@@ -215,18 +216,18 @@
                     current_problem_imgs[i] = String(current_problem_id) + problem_imgs_suffix[i];
                 }
                 // let temp="static/data/"+String(current_problem_id)+"_0.png";
-                document.getElementById("statement").src = "static/data/" + String(current_problem_id) + "_0.png";
-                document.getElementById("c1").src = "static/data/" + String(current_problem_id) + "_1.png";
-                document.getElementById("c2").src = "static/data/" + String(current_problem_id) + "_2.png";
-                document.getElementById("c3").src = "static/data/" + String(current_problem_id) + "_3.png";
-                document.getElementById("c4").src = "static/data/" + String(current_problem_id) + "_4.png";
-                document.getElementById("c5").src = "static/data/" + String(current_problem_id) + "_5.png";
+                document.getElementById("statement").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_0.png";
+                document.getElementById("c1").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_1.png";
+                document.getElementById("c2").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_2.png";
+                document.getElementById("c3").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_3.png";
+                document.getElementById("c4").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_4.png";
+                document.getElementById("c5").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_5.png";
 
                 this.percentage = Math.ceil(current_problem_id / problem_count * 100);
 
-                if(markedItems[chapter_id + "_" + String(current_problem_id)]){
+                if (markedItems[chapter_id + "_" + String(current_problem_id)]) {
                     $("#fav_button").text("取消收藏");
-                }else{
+                } else {
                     $("#fav_button").text("收藏此题");
                 }
             },
@@ -263,18 +264,18 @@
     for (let i = 0; i < 6; i++) {
         current_problem_imgs[i] = String(current_problem_id) + problem_imgs_suffix[i];
     }
-    document.getElementById("statement").src = "static/data/" + String(current_problem_id) + "_0.png";
-    document.getElementById("c1").src = "static/data/" + String(current_problem_id) + "_1.png";
-    document.getElementById("c2").src = "static/data/" + String(current_problem_id) + "_2.png";
-    document.getElementById("c3").src = "static/data/" + String(current_problem_id) + "_3.png";
-    document.getElementById("c4").src = "static/data/" + String(current_problem_id) + "_4.png";
-    document.getElementById("c5").src = "static/data/" + String(current_problem_id) + "_5.png";
+    document.getElementById("statement").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_0.png";
+    document.getElementById("c1").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_1.png";
+    document.getElementById("c2").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_2.png";
+    document.getElementById("c3").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_3.png";
+    document.getElementById("c4").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_4.png";
+    document.getElementById("c5").src = "static/data/" + String(chapter_id) + "_" + String(current_problem_id) + "_5.png";
 
     this.percentage = Math.ceil(current_problem_id / problem_count * 100);
 
-    if(markedItems[chapter_id + "_" + String(current_problem_id)]){
+    if (markedItems[chapter_id + "_" + String(current_problem_id)]) {
         $("#fav_button").text("取消收藏");
-    }else{
+    } else {
         $("#fav_button").text("收藏此题");
     }
 </script>
