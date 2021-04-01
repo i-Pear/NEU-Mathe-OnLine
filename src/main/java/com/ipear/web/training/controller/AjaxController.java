@@ -1,21 +1,24 @@
 package com.ipear.web.training.controller;
 
+import com.google.gson.Gson;
 import com.ipear.web.training.entity.ExerciseRecord;
+import com.ipear.web.training.entity.Problem;
 import com.ipear.web.training.entity.User;
 import com.ipear.web.training.mapper.ExerciseRecordRepository;
+import com.ipear.web.training.mapper.ProblemRepository;
 import com.ipear.web.training.mapper.UserRepository;
 import lombok.Data;
-import net.sf.json.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
-import net.sf.json.JSONArray;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 @Data
 class RegisterData{
@@ -32,33 +35,69 @@ public class AjaxController {
     @Autowired
     ExerciseRecordRepository exerciseRecordRepository;
 
-    static Map<String, Pair<String,Integer>> chapter_name = new HashMap<>() {{
-            put("1_1", Pair.of("1.1 函数",3));
-            put("1_2", Pair.of("1.2 数列的极限",2));
-            put("1_3", Pair.of("1.3 函数的极限",3));
-            put("1_4", Pair.of("1.4 极限的存在法则",3));
+    @Autowired
+    ProblemRepository problemRepository;
 
-            put("2_1", Pair.of("2.1 导数的概念",3));
-            put("2_2", Pair.of("2.2 导数的求导法则",3));
-            put("2_3", Pair.of("2.3 高阶导数",3));
-            put("2_4", Pair.of("2.4 微分",3));
-    }};
+    static HashMap chapter_name;
+
+    public AjaxController() throws IOException {
+        load_chapter_name();
+    }
+
+    @RequestMapping("/getProblemImage/{id}")
+    public List<Object> getProblemImage(@PathVariable int id, HttpServletRequest request){
+        Problem problem =problemRepository.getProblemById(id);
+        return new ArrayList<Object>(){{
+            add(problem.img0);
+            add(problem.img1);
+            add(problem.img2);
+            add(problem.img3);
+            add(problem.img4);
+            add(problem.imgans);
+        }};
+    }
 
     @RequestMapping("/getChapterInfo/{chapter}")
     public Map<String, Object> getChapterInfo(@PathVariable String chapter, HttpServletRequest request) {
         Cookie[] cookies= request.getCookies();
-        String username="";
+        String username = null;
+        if(cookies==null){
+            return new HashMap<String,Object>(){{
+                put("error","cookie invalid.");
+            }};
+        }
         for(Cookie c:cookies){
             if(c.getName().equals("username")){
                 username=c.getValue();
                 break;
             }
         }
+        if(username==null){
+            return new HashMap<String,Object>(){{
+                put("error","username invalid.");
+            }};
+        }
+
         ExerciseRecord exerciseRecord= exerciseRecordRepository.getExerciseRecordByUid(username);
+        List<Problem> problems= problemRepository.getProblemsByChapter(chapter);
+
+        ArrayList<Integer> problem_ids=new ArrayList<Integer>();
+        for(Problem problem:problems){
+            problem_ids.add(problem.id);
+        }
+
+        ArrayList<Integer> problem_ans=new ArrayList<Integer>();
+        for(Problem problem:problems){
+            problem_ans.add(problem.answer);
+        }
+
+        int problem_count=problems.size();
 
         Map<String,Object> map=new HashMap<>();
-        map.put("chapter_name",chapter_name.get(chapter).getFirst());
-        map.put("problem_count",chapter_name.get(chapter).getSecond());
+        map.put("chapter_name",chapter_name.get(chapter));
+        map.put("problem_count",problem_count);
+        map.put("problem_ids",problem_ids);
+        map.put("answer",problem_ans);
         map.put("markedItems",exerciseRecord.record);
         return map;
     }
@@ -66,12 +105,17 @@ public class AjaxController {
     @RequestMapping(value = "/updateExerciseRecord/",method = {RequestMethod.POST})
     public Map<String, Object> updateExerciseRecord(@RequestBody String data, HttpServletRequest request) {
         Cookie[] cookies= request.getCookies();
-        String username="";
+        String username = null;
         for(Cookie c:cookies){
             if(c.getName().equals("username")){
                 username=c.getValue();
                 break;
             }
+        }
+        if(username==null){
+            return new HashMap<String,Object>(){{
+                put("error","username invalid.");
+            }};
         }
 
         ExerciseRecord exerciseRecord= exerciseRecordRepository.getExerciseRecordByUid(username);
@@ -171,6 +215,17 @@ public class AjaxController {
             return "{\"status\":\"failed\"}";
         }
 
+    }
+
+    static class ChapterInfo{
+        String id;
+        String name;
+    }
+
+    private void load_chapter_name() throws IOException {
+        String str = Files.readString(Path.of("chapter_name.json"));
+        Gson json=new Gson();
+        chapter_name =json.fromJson(str, HashMap.class);
     }
 
 }
