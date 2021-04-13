@@ -11,9 +11,24 @@
         @import url("https://lib.baomitu.com/element-ui/2.13.2/theme-chalk/index.css");
     </style>
     <script>
-        if(getCookie("username")==null){
+        if(getCookie("token")==null){
             alert("请先登录！");
             window.location="/login";
+        }else{
+            $.ajax({
+                type: "get",
+                url: "checkToken/",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                cache: false,
+                success: function (data) {
+                    if(data["status"]==="invalid"){
+                        alert("登陆已过期！");
+                        window.location="/login";
+                    }
+                },
+            });
         }
 
         function GetQueryString(name) {
@@ -644,6 +659,9 @@
             <p>
                 东北大学数学题库练习系统 Powered by Vue, jQuery, Elements, Spring Boot<br/>
                 Designed by @i.Pear, 2020.10.31
+            </p>
+            <p>
+                <a href="http://beian.miit.gov.cn/">辽ICP备2021003455号</a>
             </p>
         </div>
     </el-footer>
