@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+5401792_ipearworks.cn.pfx
+src/main/resources/application.properties
